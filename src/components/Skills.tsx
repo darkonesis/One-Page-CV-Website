@@ -94,7 +94,7 @@ export function Skills() {
             return (
               <div
                 key={skill.title}
-                className="resume-card px-6 md:px-8 py-6 md:py-8 rounded-3xl transition-all hover:scale-[1.01]"
+                className="resume-card glass-card px-6 md:px-8 py-6 md:py-8 rounded-3xl transition-all hover:scale-[1.01]"
               >
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-6">

@@ -16,7 +16,7 @@ export function Contact() {
         <div className="flex flex-col gap-10 md:gap-12">
           
           {/* CTA card */}
-          <div className="resume-card px-6 md:px-8 py-6 md:py-8 rounded-3xl transition-all">
+          <div className="resume-card glass-card px-6 md:px-8 py-6 md:py-8 rounded-3xl transition-all">
             {/* Description */}
             <p className="mb-8 md:mb-10">
               Cerchi qualcuno che sappia <strong>ascoltare</strong>, <strong>progettare con metodo</strong> e portare <strong>risultati concreti</strong>? Parliamone.
@@ -25,7 +25,7 @@ export function Contact() {
             {/* Email CTA button */}
             <a
               href="mailto:a.giaccari@icloud.com"
-              className="resume-cta px-6 md:px-8 py-3.5 md:py-4 rounded-2xl gap-3 md:gap-4 hover:scale-[1.02]"
+              className="resume-cta info-button px-6 md:px-8 py-3.5 md:py-4 rounded-2xl gap-3 md:gap-4 hover:scale-[1.02]"
             >
               <Mail 
                 className="w-5 h-5 md:w-6 md:h-6" 

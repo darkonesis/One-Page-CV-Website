@@ -54,7 +54,7 @@ export function Experience() {
           {experiences.map((experience) => (
             <div
               key={experience.company}
-              className="resume-card px-6 md:px-8 py-6 md:py-8 rounded-3xl transition-all hover:scale-[1.01]"
+              className="resume-card glass-card px-6 md:px-8 py-6 md:py-8 rounded-3xl transition-all hover:scale-[1.01]"
             >
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
