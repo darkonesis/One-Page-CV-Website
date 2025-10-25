@@ -324,7 +324,6 @@
     letter-spacing: var(--letter-spacing-h1);
     line-height: var(--line-height-h1);
     color: var(--foreground);
-    padding-right: var(--optical-padding-h1);
   }
 
   h2 {
@@ -354,15 +353,27 @@
   }
 
   p {
-    font-size: var(--font-size-body);
     font-weight: var(--font-weight-body);
-    line-height: var(--line-height-body);
-    color: var(--foreground-secondary);
+    font-size: clamp(1rem, 0.5vw + 0.9rem, 1.1rem);
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    color: rgba(242, 242, 242, 0.85);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    max-width: min(90%, 65ch);
+  }
+
+  @media (width >= 768px) {
+    p {
+      max-width: 65ch;
+    }
   }
 
   strong {
     font-weight: var(--font-weight-semibold);
-    color: var(--foreground);
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: 0.01em;
   }
 
   small {
@@ -890,83 +901,51 @@
   }
 
   .resume-section:first-of-type h1 {
-    position: relative;
-    display: inline-flex;
-    justify-content: center;
-    text-align: center;
+    text-align: left;
     margin: 0;
-    margin-inline: auto;
-    max-width: min(100%, 13ch);
+    width: 100%;
     white-space: normal;
     line-height: 1.15;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     letter-spacing: clamp(0.012em, 0.004em + 0.18vw, 0.028em);
+    color: var(--foreground);
     text-shadow:
-      0 20px 42px rgba(0, 0, 0, 0.55),
-      0 2px 6px rgba(0, 0, 0, 0.38);
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
-    margin-bottom: 0;
-    align-self: center;
-    --badge-height: 2.5em;
-    border-radius: calc(0.4 * var(--badge-height));
-  }
-
-  .resume-section:first-of-type h1::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-  }
-
-  .resume-section:first-of-type h1::before {
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06) 55%, rgba(255, 255, 255, 0) 100%);
-    opacity: 0.28;
-  }
-
-  @supports (color-mix(in srgb, red 50%, transparent)) {
-    .resume-section:first-of-type h1::before {
-      border-color: color-mix(in srgb, var(--foreground) 18%, transparent);
-    }
+      0 0 20px rgba(0, 0, 0, 0.45),
+      0 0 40px rgba(0, 0, 0, 0.3);
+    font-size: clamp(2.1rem, 6vw + 0.8rem, 4rem);
   }
 
   .resume-section:first-of-type > .w-full {
     --hero-cluster-gap: clamp(1.8rem, 3.4vw, 2.6rem);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: var(--hero-cluster-gap);
-  }
-
-  .resume-section:first-of-type > .w-full > :first-child {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--hero-cluster-gap);
-    margin: 0 !important;
-    text-align: center;
-    width: min(100%, 620px);
-    margin-inline: auto;
-  }
-
-  .resume-section:first-of-type > .w-full > :first-child > :first-child {
-    margin: 0 !important;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .resume-section:first-of-type .flex.flex-wrap {
-    display: flex;
-    flex-direction: column;
     align-items: stretch;
-    gap: clamp(1.1rem, 1.8vw, 1.5rem);
+    text-align: left;
+    gap: var(--hero-cluster-gap);
+  }
+
+  .hero-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--hero-cluster-gap);
+    margin: 0 !important;
     width: min(100%, 360px);
-    margin-inline: auto;
+    align-self: flex-start;
+  }
+
+  .hero-heading h1 {
+    align-self: flex-start;
+    margin-left: 0;
+    width: min(100%, 360px);
+  }
+
+  .hero-badges {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.1rem, 1.8vw, 1.5rem);
+    align-items: stretch;
+    margin-inline: 0;
+    width: min(100%, 360px);
   }
 
   .resume-section:first-of-type .resume-chip {
@@ -988,6 +967,7 @@
       0 4px 12px rgba(0, 0, 0, 0.32);
     filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
     transition: transform 160ms ease, box-shadow 160ms ease;
+    width: 100%;
   }
 
   .resume-section:first-of-type .resume-chip::before,
@@ -1024,6 +1004,42 @@
     margin: 0 auto;
   }
 
+  @media (width >= 1024px) {
+    .resume-section:first-of-type > .w-full {
+      --hero-cluster-gap: clamp(2rem, 3.6vw, 3rem);
+      display: grid;
+      grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+      column-gap: clamp(2.5rem, 4vw, 4.5rem);
+      align-items: start;
+    }
+
+    .resume-section:first-of-type h1 {
+      margin-inline: 0;
+      max-width: min(100%, 12ch);
+    }
+
+    .resume-section:first-of-type > .w-full > :first-child {
+      grid-template-rows: auto 1fr;
+      align-items: start;
+    }
+
+    .resume-section:first-of-type .flex.flex-wrap {
+      align-items: flex-start;
+      width: 100%;
+      margin-inline: 0;
+      max-width: 360px;
+    }
+
+    .resume-section:first-of-type .resume-card {
+      margin: 0;
+      justify-self: stretch;
+      align-self: center;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+  }
+
   @supports (color-mix(in srgb, red 50%, transparent)) {
     .resume-section:first-of-type .resume-chip::before {
       border-color: color-mix(in srgb, var(--foreground-secondary) 18%, transparent);
@@ -1031,9 +1047,11 @@
   }
 
   .resume-card {
-    background-color: var(--card);
+    background: rgba(16, 16, 18, 0.72);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
     box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     transition: all var(--transition-base);
   }
 
@@ -1422,5 +1440,5 @@ body::before {
   .resume-section:first-of-type h1,
   .resume-section:first-of-type .resume-chip {
     padding: 0.5em 1em;
-    margin-inline: 0.5em;
+    margin-inline: 0;
   }

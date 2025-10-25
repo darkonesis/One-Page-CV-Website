@@ -7,14 +7,10 @@ export function Hero() {
       <div className="w-full max-w-6xl mx-auto">
         
         {/* Name + Contact info */}
-        <div className="mb-16 md:mb-20 lg:mb-24">
-          {/* Name - H1 using fluid typography */}
-          <div className="mb-10 md:mb-12">
-            <h1>Andrea Giaccari</h1>
-          </div>
+        <div className="mb-16 md:mb-20 lg:mb-24 hero-heading">
+          <h1>Andrea Giaccari</h1>
           
-          {/* Contact info badges */}
-          <div className="flex flex-wrap gap-3 md:gap-4">
+          <div className="flex flex-wrap gap-3 md:gap-4 hero-badges">
             <span className="resume-chip px-6 md:px-8 py-3 md:py-4 rounded-2xl gap-3 md:gap-4 transition-all">
               <MapPin className="w-5 h-5 resume-chip-icon" strokeWidth={2} />
               <span>Padova, Italia</span>
