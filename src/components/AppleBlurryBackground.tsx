@@ -1,7 +1,8 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 
-const BASE_COLORS = ['#FFBE0B', '#FB5607', '#FF006E', '#8338EC', '#3A86FF'];
+const BASE_COLORS = ['#00FF9F', '#00B2FF', '#7F00FF', '#FF00F7', '#FFDD00'];
 const GOLDEN_RATIO_CONJUGATE = 0.61803398875;
 const GOLDEN_ANGLE = 2 * Math.PI * GOLDEN_RATIO_CONJUGATE;
 
@@ -108,9 +109,71 @@ const hexToRgbCss = (hex: string) => rgbToCss(hexToRgb(hex));
 
 const enhanceHsl = ({ h, s, l }: HSL): HSL => ({
   h,
-  s: clamp01(0.94 + s * 0.06),
-  l: clamp01(0.58 + (l - 0.5) * 0.4),
+  s: clamp01(0.9 + s * 0.1),
+  l: clamp01(0.5 + (l - 0.5) * 0.2),
 });
+
+type HslAdjust = {
+  hue?: number;
+  saturation?: number;
+  lightness?: number;
+};
+
+const adjustHsl = (hsl: HSL, { hue = 0, saturation = 0, lightness = 0 }: HslAdjust): HSL => ({
+  h: (hsl.h + hue + 1) % 1,
+  s: clamp01(hsl.s + saturation),
+  l: clamp01(hsl.l + lightness),
+});
+
+const hslToCssString = (hsl: HSL) => rgbToCss(hslToRgb(hsl));
+
+const hslToRgbaString = (hsl: HSL, alpha: number) => {
+  const { r, g, b } = hslToRgb(hsl);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+const createPulseSequence = (color: string, blur: number, hash: number) => {
+  const loopSequence = (values: string[]) => [...values, values[0]];
+  const base = enhanceHsl(hexToHsl(color));
+  const depthFactor = clamp01(blur / 24);
+  const hueWave = 0.036 + (hash % 12) * 0.002;
+  const hueWaveAlt = -0.038 - (hash % 9) * 0.0018;
+  const saturationLift = 0.12 + (1 - depthFactor) * 0.06;
+  const lightLift = 0.1 + (1 - depthFactor) * 0.08;
+
+  const innerA = adjustHsl(base, { saturation: saturationLift, lightness: lightLift });
+  const innerB = adjustHsl(innerA, { hue: hueWave, lightness: -0.03 });
+  const innerC = adjustHsl(innerA, { hue: hueWaveAlt, lightness: 0.03 });
+
+  const midA = adjustHsl(base, { saturation: saturationLift * 0.6, lightness: lightLift * 0.4 });
+  const midB = adjustHsl(midA, { hue: hueWave * 0.9, lightness: -0.04 });
+  const midC = adjustHsl(midA, { hue: hueWaveAlt * 0.85, lightness: 0.04 });
+
+  const outerA = adjustHsl(base, { saturation: saturationLift * 0.35, lightness: lightLift * 0.2 });
+  const outerB = adjustHsl(outerA, { hue: hueWave * 0.7, lightness: 0.03 });
+  const outerC = adjustHsl(outerA, { hue: hueWaveAlt * 0.75, lightness: -0.03 });
+
+  return {
+    inner: loopSequence([
+      hslToCssString(innerA),
+      hslToCssString(innerB),
+      hslToCssString(innerC),
+      hslToCssString(innerB),
+    ]),
+    mid: loopSequence([
+      hslToCssString(midA),
+      hslToCssString(midB),
+      hslToCssString(midC),
+      hslToCssString(midB),
+    ]),
+    outer: loopSequence([
+      hslToRgbaString(outerA, 0.7),
+      hslToRgbaString(outerB, 0.62),
+      hslToRgbaString(outerC, 0.58),
+      hslToRgbaString(outerB, 0.62),
+    ]),
+  };
+};
 
 type LayoutOptions = {
   centerX?: number;
@@ -333,651 +396,525 @@ const createGodrayGradient = (color: string, angle: number, blur: number) => {
   return `linear-gradient(${angle}deg, ${rayColor} 0%, rgba(${rayR}, ${rayG}, ${rayB}, 0) 60%)`;
 };
 
-const RAW_DESKTOP_SPHERES: SphereBase[] = [
-  // Layer largo: sfere soffuse agli angoli per creare profondità morbida
+const RAW_BASE_SPHERES: SphereBase[] = [
+  // Large layer – soft halo verso i bordi per lasciare respiro al centro
   {
     id: 'large-1',
-    size: 1080,
-    x: '18%',
-    y: '18%',
-    blur: 22,
-    opacity: 0.76,
-    duration: 36,
-    parallaxSpeed: 0.022
+    size: 360,
+    x: '12%',
+    y: '6%',
+    blur: 12,
+    opacity: 0.74,
+    duration: 30,
+    parallaxSpeed: 0.056,
   },
   {
     id: 'large-2',
-    size: 1020,
-    x: '82%',
-    y: '22%',
-    blur: 21,
-    opacity: 0.74,
-    duration: 38,
-    parallaxSpeed: 0.024
+    size: 340,
+    x: '50%',
+    y: '4%',
+    blur: 11.5,
+    opacity: 0.72,
+    duration: 29,
+    parallaxSpeed: 0.058,
   },
   {
     id: 'large-3',
-    size: 980,
-    x: '20%',
-    y: '82%',
-    blur: 21,
-    opacity: 0.73,
-    duration: 35,
-    parallaxSpeed: 0.026
+    size: 360,
+    x: '88%',
+    y: '8%',
+    blur: 12,
+    opacity: 0.74,
+    duration: 30,
+    parallaxSpeed: 0.057,
   },
   {
     id: 'large-4',
-    size: 1040,
-    x: '82%',
-    y: '80%',
-    blur: 23,
+    size: 360,
+    x: '14%',
+    y: '92%',
+    blur: 12.5,
     opacity: 0.75,
-    duration: 37,
-    parallaxSpeed: 0.023
+    duration: 31,
+    parallaxSpeed: 0.055,
+  },
+  {
+    id: 'large-5',
+    size: 340,
+    x: '50%',
+    y: '94%',
+    blur: 11.5,
+    opacity: 0.73,
+    duration: 30,
+    parallaxSpeed: 0.056,
+  },
+  {
+    id: 'large-6',
+    size: 360,
+    x: '86%',
+    y: '90%',
+    blur: 12.5,
+    opacity: 0.75,
+    duration: 31,
+    parallaxSpeed: 0.055,
   },
 
-  // Layer medio: corona attorno al focus centrale
+  // Medium layer – copertura uniforme centro/sfalsata
   {
     id: 'medium-1',
-    size: 620,
-    x: '32%',
-    y: '32%',
-    blur: 11,
-    opacity: 0.88,
-    duration: 24,
-    parallaxSpeed: 0.11
+    size: 260,
+    x: '26%',
+    y: '26%',
+    blur: 7,
+    opacity: 0.86,
+    duration: 22,
+    parallaxSpeed: 0.175,
   },
   {
     id: 'medium-2',
-    size: 610,
-    x: '68%',
-    y: '30%',
-    blur: 10,
-    opacity: 0.87,
-    duration: 25,
-    parallaxSpeed: 0.12
+    size: 250,
+    x: '74%',
+    y: '24%',
+    blur: 6.8,
+    opacity: 0.86,
+    duration: 22,
+    parallaxSpeed: 0.176,
   },
   {
     id: 'medium-3',
-    size: 600,
-    x: '28%',
-    y: '60%',
-    blur: 10,
-    opacity: 0.86,
-    duration: 23,
-    parallaxSpeed: 0.13
+    size: 252,
+    x: '18%',
+    y: '48%',
+    blur: 7.2,
+    opacity: 0.85,
+    duration: 21,
+    parallaxSpeed: 0.182,
   },
   {
     id: 'medium-4',
-    size: 590,
-    x: '72%',
-    y: '65%',
-    blur: 10,
-    opacity: 0.86,
-    duration: 26,
-    parallaxSpeed: 0.12
+    size: 252,
+    x: '82%',
+    y: '50%',
+    blur: 7.2,
+    opacity: 0.85,
+    duration: 21,
+    parallaxSpeed: 0.183,
   },
   {
     id: 'medium-5',
-    size: 580,
-    x: '48%',
-    y: '24%',
-    blur: 9,
-    opacity: 0.87,
-    duration: 24,
-    parallaxSpeed: 0.13
+    size: 246,
+    x: '38%',
+    y: '64%',
+    blur: 6.6,
+    opacity: 0.84,
+    duration: 21,
+    parallaxSpeed: 0.19,
   },
   {
     id: 'medium-6',
-    size: 560,
-    x: '50%',
-    y: '78%',
-    blur: 9,
-    opacity: 0.86,
-    duration: 25,
-    parallaxSpeed: 0.14
+    size: 246,
+    x: '62%',
+    y: '64%',
+    blur: 6.6,
+    opacity: 0.84,
+    duration: 21,
+    parallaxSpeed: 0.191,
   },
   {
     id: 'medium-7',
-    size: 570,
-    x: '15%',
-    y: '48%',
-    blur: 10,
-    opacity: 0.85,
-    duration: 27,
-    parallaxSpeed: 0.13
+    size: 238,
+    x: '30%',
+    y: '82%',
+    blur: 6.2,
+    opacity: 0.83,
+    duration: 20,
+    parallaxSpeed: 0.188,
   },
   {
     id: 'medium-8',
-    size: 555,
-    x: '86%',
-    y: '48%',
-    blur: 10,
+    size: 238,
+    x: '70%',
+    y: '80%',
+    blur: 6.2,
+    opacity: 0.83,
+    duration: 20,
+    parallaxSpeed: 0.189,
+  },
+  {
+    id: 'medium-9',
+    size: 254,
+    x: '50%',
+    y: '38%',
+    blur: 6.9,
     opacity: 0.85,
-    duration: 26,
-    parallaxSpeed: 0.13
+    duration: 21,
+    parallaxSpeed: 0.178,
+  },
+  {
+    id: 'medium-10',
+    size: 244,
+    x: '50%',
+    y: '70%',
+    blur: 6.5,
+    opacity: 0.84,
+    duration: 21,
+    parallaxSpeed: 0.186,
   },
 
-  // Layer piccolo: accenti vicini al centro per guidare lo sguardo
+  // Small layer – dettaglio vicino al contenuto
   {
     id: 'small-1',
-    size: 250,
+    size: 180,
     x: '40%',
-    y: '40%',
-    blur: 2,
-    opacity: 0.99,
+    y: '34%',
+    blur: 2.4,
+    opacity: 0.9,
     duration: 14,
-    parallaxSpeed: 0.42
+    parallaxSpeed: 0.42,
   },
   {
     id: 'small-2',
-    size: 245,
+    size: 180,
     x: '60%',
-    y: '42%',
-    blur: 2,
-    opacity: 0.99,
-    duration: 15,
-    parallaxSpeed: 0.41
+    y: '34%',
+    blur: 2.4,
+    opacity: 0.9,
+    duration: 14,
+    parallaxSpeed: 0.423,
   },
   {
     id: 'small-3',
-    size: 238,
-    x: '52%',
-    y: '60%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 16,
-    parallaxSpeed: 0.44
+    size: 178,
+    x: '32%',
+    y: '52%',
+    blur: 2.2,
+    opacity: 0.89,
+    duration: 14,
+    parallaxSpeed: 0.435,
   },
   {
     id: 'small-4',
-    size: 230,
-    x: '36%',
-    y: '58%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 16,
-    parallaxSpeed: 0.45
+    size: 178,
+    x: '68%',
+    y: '52%',
+    blur: 2.2,
+    opacity: 0.89,
+    duration: 14,
+    parallaxSpeed: 0.436,
   },
   {
     id: 'small-5',
-    size: 240,
-    x: '68%',
-    y: '50%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 15,
-    parallaxSpeed: 0.43
+    size: 172,
+    x: '44%',
+    y: '70%',
+    blur: 2.1,
+    opacity: 0.88,
+    duration: 13,
+    parallaxSpeed: 0.446,
   },
   {
     id: 'small-6',
-    size: 232,
-    x: '30%',
-    y: '48%',
-    blur: 2,
-    opacity: 0.97,
-    duration: 17,
-    parallaxSpeed: 0.46
+    size: 172,
+    x: '56%',
+    y: '70%',
+    blur: 2.1,
+    opacity: 0.88,
+    duration: 13,
+    parallaxSpeed: 0.448,
   },
   {
     id: 'small-7',
-    size: 228,
-    x: '46%',
-    y: '72%',
+    size: 170,
+    x: '48%',
+    y: '46%',
     blur: 2,
-    opacity: 0.97,
-    duration: 15,
-    parallaxSpeed: 0.47
+    opacity: 0.88,
+    duration: 13,
+    parallaxSpeed: 0.43,
   },
   {
     id: 'small-8',
-    size: 226,
-    x: '58%',
-    y: '72%',
+    size: 170,
+    x: '52%',
+    y: '58%',
     blur: 2,
-    opacity: 0.97,
-    duration: 15,
-    parallaxSpeed: 0.46
+    opacity: 0.88,
+    duration: 13,
+    parallaxSpeed: 0.432,
   },
 
-  // Layer tiny: sparkles dinamici vicino al centro
+  // Tiny sparkles – luminanza centrale
   {
     id: 'tiny-1',
     size: 140,
-    x: '44%',
-    y: '46%',
-    blur: 1,
-    opacity: 0.99,
+    x: '46%',
+    y: '44%',
+    blur: 1.2,
+    opacity: 0.96,
     duration: 11,
-    parallaxSpeed: 0.62
+    parallaxSpeed: 0.58,
   },
   {
     id: 'tiny-2',
-    size: 135,
-    x: '56%',
-    y: '46%',
-    blur: 1,
-    opacity: 0.99,
-    duration: 12,
-    parallaxSpeed: 0.63
+    size: 140,
+    x: '54%',
+    y: '44%',
+    blur: 1.2,
+    opacity: 0.96,
+    duration: 11,
+    parallaxSpeed: 0.581,
   },
   {
     id: 'tiny-3',
-    size: 132,
-    x: '52%',
-    y: '54%',
-    blur: 1,
-    opacity: 0.99,
+    size: 138,
+    x: '44%',
+    y: '56%',
+    blur: 1.1,
+    opacity: 0.96,
     duration: 11,
-    parallaxSpeed: 0.64
+    parallaxSpeed: 0.59,
   },
   {
     id: 'tiny-4',
     size: 138,
-    x: '48%',
-    y: '54%',
-    blur: 1,
-    opacity: 0.99,
-    duration: 12,
-    parallaxSpeed: 0.62
-  }
-];
-
-const RAW_MOBILE_SPHERES: SphereBase[] = [
-  // Layer largo
-  {
-    id: 'large-m1',
-    size: 560,
-    x: '20%',
-    y: '12%',
-    blur: 8,
-    opacity: 0.95,
-    duration: 24,
-    parallaxSpeed: 0.08
-  },
-  {
-    id: 'large-m2',
-    size: 540,
-    x: '80%',
-    y: '18%',
-    blur: 8,
-    opacity: 0.95,
-    duration: 25,
-    parallaxSpeed: 0.09
-  },
-  {
-    id: 'large-m3',
-    size: 520,
-    x: '22%',
-    y: '82%',
-    blur: 7,
-    opacity: 0.94,
-    duration: 25,
-    parallaxSpeed: 0.1
-  },
-  {
-    id: 'large-m4',
-    size: 540,
-    x: '78%',
-    y: '84%',
-    blur: 8,
-    opacity: 0.95,
-    duration: 26,
-    parallaxSpeed: 0.09
-  },
-
-  // Layer medio
-  {
-    id: 'medium-m1',
-    size: 380,
-    x: '32%',
-    y: '32%',
-    blur: 5,
-    opacity: 0.97,
-    duration: 20,
-    parallaxSpeed: 0.18
-  },
-  {
-    id: 'medium-m2',
-    size: 370,
-    x: '68%',
-    y: '32%',
-    blur: 5,
-    opacity: 0.97,
-    duration: 21,
-    parallaxSpeed: 0.19
-  },
-  {
-    id: 'medium-m3',
-    size: 365,
-    x: '30%',
-    y: '58%',
-    blur: 5,
-    opacity: 0.96,
-    duration: 20,
-    parallaxSpeed: 0.18
-  },
-  {
-    id: 'medium-m4',
-    size: 360,
-    x: '70%',
-    y: '60%',
-    blur: 5,
-    opacity: 0.96,
-    duration: 21,
-    parallaxSpeed: 0.19
-  },
-  {
-    id: 'medium-m5',
-    size: 350,
-    x: '50%',
-    y: '24%',
-    blur: 4,
-    opacity: 0.96,
-    duration: 20,
-    parallaxSpeed: 0.2
-  },
-  {
-    id: 'medium-m6',
-    size: 348,
-    x: '50%',
-    y: '74%',
-    blur: 4,
-    opacity: 0.96,
-    duration: 21,
-    parallaxSpeed: 0.19
-  },
-  {
-    id: 'medium-m7',
-    size: 340,
-    x: '18%',
-    y: '48%',
-    blur: 5,
-    opacity: 0.95,
-    duration: 22,
-    parallaxSpeed: 0.19
-  },
-  {
-    id: 'medium-m8',
-    size: 340,
-    x: '82%',
-    y: '50%',
-    blur: 5,
-    opacity: 0.95,
-    duration: 22,
-    parallaxSpeed: 0.2
-  },
-
-  // Layer piccolo
-  {
-    id: 'small-m1',
-    size: 248,
-    x: '42%',
-    y: '38%',
-    blur: 2,
-    opacity: 0.99,
-    duration: 14,
-    parallaxSpeed: 0.39
-  },
-  {
-    id: 'small-m2',
-    size: 244,
-    x: '58%',
-    y: '38%',
-    blur: 2,
-    opacity: 0.99,
-    duration: 14,
-    parallaxSpeed: 0.38
-  },
-  {
-    id: 'small-m3',
-    size: 240,
-    x: '48%',
-    y: '54%',
-    blur: 2,
-    opacity: 0.99,
-    duration: 15,
-    parallaxSpeed: 0.4
-  },
-  {
-    id: 'small-m4',
-    size: 236,
-    x: '36%',
-    y: '52%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 15,
-    parallaxSpeed: 0.41
-  },
-  {
-    id: 'small-m5',
-    size: 234,
-    x: '62%',
-    y: '54%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 16,
-    parallaxSpeed: 0.41
-  },
-  {
-    id: 'small-m6',
-    size: 232,
-    x: '40%',
-    y: '66%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 15,
-    parallaxSpeed: 0.42
-  },
-  {
-    id: 'small-m7',
-    size: 228,
     x: '56%',
-    y: '66%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 15,
-    parallaxSpeed: 0.42
+    y: '56%',
+    blur: 1.1,
+    opacity: 0.96,
+    duration: 11,
+    parallaxSpeed: 0.591,
   },
   {
-    id: 'small-m8',
-    size: 226,
+    id: 'tiny-5',
+    size: 136,
     x: '50%',
-    y: '44%',
-    blur: 2,
-    opacity: 0.98,
-    duration: 16,
-    parallaxSpeed: 0.4
-  },
-
-  // Sparkles
-  {
-    id: 'tiny-m1',
-    size: 150,
-    x: '46%',
-    y: '46%',
-    blur: 1,
-    opacity: 0.99,
-    duration: 12,
-    parallaxSpeed: 0.58
+    y: '62%',
+    blur: 1.1,
+    opacity: 0.95,
+    duration: 11,
+    parallaxSpeed: 0.6,
   },
   {
-    id: 'tiny-m2',
-    size: 148,
-    x: '54%',
-    y: '46%',
-    blur: 1,
-    opacity: 0.99,
-    duration: 12,
-    parallaxSpeed: 0.59
-  },
-  {
-    id: 'tiny-m3',
-    size: 146,
+    id: 'tiny-6',
+    size: 136,
     x: '50%',
-    y: '50%',
-    blur: 1,
-    opacity: 0.99,
-    duration: 12,
-    parallaxSpeed: 0.6
-  },
-  {
-    id: 'tiny-m4',
-    size: 148,
-    x: '48%',
-    y: '54%',
-    blur: 1,
-    opacity: 0.99,
-    duration: 12,
-    parallaxSpeed: 0.59
-  }
-];
-
-const DESKTOP_LAYER_LAYOUTS: LayerDefinition[] = [
-  {
-    count: 4,
-    options: {
-      centerX: 0.5,
-      centerY: 0.5,
-      radiusMin: 0.62,
-      radiusMax: 0.95,
-      spreadX: 0.6,
-      spreadY: 0.82,
-      arms: 3,
-      twist: 7,
-      armSpread: 0.24,
-      jitter: 0.05,
-      angleOffset: 0.08,
-    },
-  },
-  {
-    count: 8,
-    options: {
-      centerX: 0.5,
-      centerY: 0.5,
-      radiusMin: 0.34,
-      radiusMax: 0.7,
-      spreadX: 0.48,
-      spreadY: 0.68,
-      arms: 4,
-      twist: 6.8,
-      armSpread: 0.2,
-      jitter: 0.04,
-      angleOffset: 0.58,
-    },
-  },
-  {
-    count: 8,
-    options: {
-      centerX: 0.5,
-      centerY: 0.5,
-      radiusMin: 0.16,
-      radiusMax: 0.44,
-      spreadX: 0.35,
-      spreadY: 0.46,
-      arms: 5,
-      twist: 6.1,
-      armSpread: 0.16,
-      jitter: 0.032,
-      angleOffset: 1.05,
-    },
-  },
-  {
-    count: 4,
-    options: {
-      centerX: 0.5,
-      centerY: 0.54,
-      radiusMin: 0.08,
-      radiusMax: 0.22,
-      spreadX: 0.27,
-      spreadY: 0.32,
-      arms: 6,
-      twist: 5,
-      armSpread: 0.14,
-      jitter: 0.025,
-      angleOffset: 1.76,
-    },
+    y: '38%',
+    blur: 1.1,
+    opacity: 0.95,
+    duration: 11,
+    parallaxSpeed: 0.599,
   },
 ];
 
-const MOBILE_LAYER_LAYOUTS: LayerDefinition[] = [
-  {
-    count: 4,
-    options: {
-      centerX: 0.5,
-      centerY: 0.52,
-      radiusMin: 0.6,
-      radiusMax: 0.92,
-      spreadX: 0.44,
-      spreadY: 0.88,
-      arms: 3,
-      twist: 6.6,
-      armSpread: 0.24,
-      jitter: 0.038,
-      angleOffset: 0.05,
-    },
-  },
-  {
-    count: 8,
-    options: {
-      centerX: 0.5,
-      centerY: 0.52,
-      radiusMin: 0.32,
-      radiusMax: 0.66,
-      spreadX: 0.38,
-      spreadY: 0.72,
-      arms: 4,
-      twist: 7,
-      armSpread: 0.2,
-      jitter: 0.034,
-      angleOffset: 0.55,
-    },
-  },
-  {
-    count: 8,
-    options: {
-      centerX: 0.5,
-      centerY: 0.52,
-      radiusMin: 0.14,
-      radiusMax: 0.36,
-      spreadX: 0.3,
-      spreadY: 0.54,
-      arms: 5,
-      twist: 6,
-      armSpread: 0.16,
-      jitter: 0.026,
-      angleOffset: 1.02,
-    },
-  },
-  {
-    count: 4,
-    options: {
-      centerX: 0.5,
-      centerY: 0.52,
-      radiusMin: 0.08,
-      radiusMax: 0.16,
-      spreadX: 0.24,
-      spreadY: 0.36,
-      arms: 6,
-      twist: 4.6,
-      armSpread: 0.14,
-      jitter: 0.022,
-      angleOffset: 1.68,
-    },
-  },
-];
-
-const DESKTOP_POSITIONED = composeLayeredLayout(RAW_DESKTOP_SPHERES, DESKTOP_LAYER_LAYOUTS, 0);
-const MOBILE_POSITIONED = composeLayeredLayout(RAW_MOBILE_SPHERES, MOBILE_LAYER_LAYOUTS, 150);
-
-const PALETTE_SIZE = Math.max(RAW_DESKTOP_SPHERES.length, RAW_MOBILE_SPHERES.length) + 8;
-const VIBRANT_PALETTE = generatePalette(PALETTE_SIZE);
-const DESKTOP_SPHERES = applyPalette(DESKTOP_POSITIONED, VIBRANT_PALETTE);
-const MOBILE_SPHERES = applyPalette(
-  MOBILE_POSITIONED,
-  VIBRANT_PALETTE,
-  Math.floor(VIBRANT_PALETTE.length / 2)
+const BASE_BLUR_RANGE = RAW_BASE_SPHERES.reduce(
+  (acc, sphere) => ({
+    min: Math.min(acc.min, sphere.blur),
+    max: Math.max(acc.max, sphere.blur),
+  }),
+  { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY }
 );
+const BASE_MIN_BLUR = BASE_BLUR_RANGE.min;
+const BASE_MAX_BLUR = BASE_BLUR_RANGE.max;
+
+const BASE_LAYER_LAYOUTS: LayerDefinition[] = [
+  {
+    count: 4,
+    options: {
+      centerX: 0.5,
+      centerY: 0.5,
+      radiusMin: 0.68,
+      radiusMax: 0.9,
+      spreadX: 0.62,
+      spreadY: 0.94,
+      arms: 4,
+      twist: 4.2,
+      armSpread: 0.14,
+      jitter: 0.02,
+      angleOffset: 0.25,
+    },
+  },
+  {
+    count: 8,
+    options: {
+      centerX: 0.5,
+      centerY: 0.5,
+      radiusMin: 0.38,
+      radiusMax: 0.64,
+      spreadX: 0.5,
+      spreadY: 0.76,
+      arms: 8,
+      twist: 3.6,
+      armSpread: 0.1,
+      jitter: 0.024,
+      angleOffset: 0.35,
+    },
+  },
+  {
+    count: 8,
+    options: {
+      centerX: 0.5,
+      centerY: 0.5,
+      radiusMin: 0.2,
+      radiusMax: 0.42,
+      spreadX: 0.38,
+      spreadY: 0.6,
+      arms: 10,
+      twist: 3.1,
+      armSpread: 0.08,
+      jitter: 0.03,
+      angleOffset: 0.78,
+    },
+  },
+  {
+    count: 4,
+    options: {
+      centerX: 0.5,
+      centerY: 0.5,
+      radiusMin: 0.12,
+      radiusMax: 0.24,
+      spreadX: 0.26,
+      spreadY: 0.38,
+      arms: 12,
+      twist: 2.8,
+      armSpread: 0.06,
+      jitter: 0.028,
+      angleOffset: 1.42,
+    },
+  },
+];
+
+const BASE_POSITIONED = composeLayeredLayout(RAW_BASE_SPHERES, BASE_LAYER_LAYOUTS, 150);
+
+const PALETTE_SIZE = RAW_BASE_SPHERES.length + 8;
+const VIBRANT_PALETTE = generatePalette(PALETTE_SIZE);
+
+type ViewportTransform = {
+  scaleX: number;
+  scaleY: number;
+  translateX?: number;
+  translateY?: number;
+  sizeMultiplier: number;
+};
+
+const VIEWPORT_TRANSFORMS: Record<'mobile' | 'desktop', ViewportTransform> = {
+  mobile: {
+    scaleX: 1.06,
+    scaleY: 1.22,
+    translateX: 0.012,
+    translateY: 0.012,
+    sizeMultiplier: 0.92,
+  },
+  desktop: {
+    scaleX: 1.26,
+    scaleY: 1.38,
+    translateX: 0.032,
+    translateY: -0.05,
+    sizeMultiplier: 1.18,
+  },
+};
+
+const percentStringToDecimal = (value: string) => {
+  const parsed = parseFloat(value);
+  if (Number.isNaN(parsed)) {
+    return 0.5;
+  }
+  return parsed / 100;
+};
+
+const clampViewportValue = (value: number) => clampRange(value, -0.22, 1.35);
+
+const distributeSpheresUniformly = (spheres: SphereBase[]): SphereBase[] => {
+  if (spheres.length <= 1) {
+    return spheres;
+  }
+
+  const sorted = spheres
+    .map((sphere, index) => ({
+      sphere,
+      index,
+      y: percentStringToDecimal(sphere.y),
+    }))
+    .sort((a, b) => a.y - b.y);
+
+  const topOvershoot = 0.14;
+  const bottomOvershoot = 0.14;
+  const verticalSpan = 1 + topOvershoot + bottomOvershoot;
+
+  const paletteSpread = [0.18, 0.5, 0.82, 0.32, 0.68, 0.5];
+
+  const redistributed = sorted.map((entry, order) => {
+    const normalized = sorted.length > 1 ? order / (sorted.length - 1) : 0.5;
+    const targetY = -topOvershoot + normalized * verticalSpan;
+    const jitterSeed = entry.index * 37.19 + order * 17.41;
+    const edgeAttenuation = 0.015 + 0.06 * (normalized * (1 - normalized));
+    const jitter = (pseudoRandom(jitterSeed) - 0.5) * edgeAttenuation;
+    const distributedY = clampViewportValue(targetY + jitter);
+
+    const baseColumn = paletteSpread[order % paletteSpread.length];
+    const horizontalSeed = entry.index * 29.73 + order * 11.29;
+    const columnJitter = (pseudoRandom(horizontalSeed) - 0.5) * 0.035;
+    const distributedX = clampViewportValue(baseColumn + columnJitter);
+
+    return {
+      ...entry.sphere,
+      x: toPercentUnclamped(distributedX),
+      y: toPercentUnclamped(distributedY),
+    };
+  });
+
+  const output: SphereBase[] = Array(spheres.length);
+  redistributed.forEach((updatedSphere, order) => {
+    const originalIndex = sorted[order].index;
+    output[originalIndex] = updatedSphere;
+  });
+
+  return output;
+};
+
+const transformSpheresForViewport = (
+  spheres: SphereBase[],
+  transform: ViewportTransform
+): SphereBase[] => {
+  const { scaleX, scaleY, translateX = 0, translateY = 0, sizeMultiplier } = transform;
+
+  return spheres.map((sphere) => {
+    const xDecimal = percentStringToDecimal(sphere.x);
+    const yDecimal = percentStringToDecimal(sphere.y);
+    const centeredX = xDecimal - 0.5;
+    const centeredY = yDecimal - 0.5;
+
+    const adjustedX = clampViewportValue(0.5 + centeredX * scaleX + translateX);
+    const adjustedY = clampViewportValue(0.5 + centeredY * scaleY + translateY);
+
+    const depthRatio =
+      BASE_MAX_BLUR === BASE_MIN_BLUR
+        ? 0.5
+        : clamp01((sphere.blur - BASE_MIN_BLUR) / (BASE_MAX_BLUR - BASE_MIN_BLUR));
+    const sizeDepthMultiplier = 0.78 + depthRatio * 0.62;
+    const blurDepthMultiplier = 0.8 + depthRatio * 1.25;
+    const opacityDepthMultiplier = 0.54 + (1 - depthRatio) * 0.46;
+    const parallaxDepthMultiplier = 0.38 + (1 - depthRatio) * 0.72;
+
+    return {
+      ...sphere,
+      size: sphere.size * sizeMultiplier * sizeDepthMultiplier,
+      blur: sphere.blur * blurDepthMultiplier,
+      opacity: clamp01(sphere.opacity * opacityDepthMultiplier),
+      parallaxSpeed: sphere.parallaxSpeed * parallaxDepthMultiplier,
+      x: toPercentUnclamped(adjustedX),
+      y: toPercentUnclamped(adjustedY),
+    };
+  });
+};
+
+const createViewportSpheres = (transform: ViewportTransform, palette: string[]) =>
+  applyPalette(
+    distributeSpheresUniformly(transformSpheresForViewport(BASE_POSITIONED, transform)),
+    palette
+  );
+
+const MOBILE_SPHERES = createViewportSpheres(VIEWPORT_TRANSFORMS.mobile, VIBRANT_PALETTE);
+const DESKTOP_SPHERES = createViewportSpheres(VIEWPORT_TRANSFORMS.desktop, VIBRANT_PALETTE);
 const PARTICLE_FIELD = generateParticleField(90, VIBRANT_PALETTE, 620);
 const PARTICLE_TWINKLE_STYLE_ID = 'galaxy-particle-twinkle';
 const PARTICLE_TWINKLE_KEYFRAMES = `
@@ -1022,7 +959,6 @@ export function AppleBlurryBackground() {
       document.head.appendChild(styleEl);
     }
   }, [shouldReduceMotion]);
-  
   const spheres = isMobile ? MOBILE_SPHERES : DESKTOP_SPHERES;
   
   // Componente sfera con parallax SINCRONIZZATO allo scroll
@@ -1042,13 +978,19 @@ export function AppleBlurryBackground() {
     
     // DEPTH OF FIELD ENHANCEMENT - Colori analoghi vibranti
     const sphereHash = sphere.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const pulseSequence = createPulseSequence(sphere.color, sphere.blur, sphereHash);
+    const initialPulse = {
+      inner: pulseSequence.inner[0],
+      mid: pulseSequence.mid[0],
+      outer: pulseSequence.outer[0],
+    };
     const getDepthEnhancedColor = (color: string, blur: number) => {
       const depthFactor = clamp01(blur / 24);
       const baseHsl = enhanceHsl(hexToHsl(color));
       const hueOffset = ((sphereHash % 15) - 7) * 0.02 + depthFactor * 0.02;
       const targetHue = (baseHsl.h + hueOffset + 1) % 1;
       const targetSaturation = clamp01(0.96 + (1 - depthFactor) * 0.04);
-      const targetLightness = clamp01(0.36 + (1 - depthFactor) * 0.26);
+      const targetLightness = clamp01(0.28 + (1 - depthFactor) * 0.16);
       return rgbToCss(
         hslToRgb({
           h: targetHue,
@@ -1057,7 +999,6 @@ export function AppleBlurryBackground() {
         })
       );
     };
-    
     // Calcola gradient stop in base alla distanza (blur)
     // Vicino: gradient denso fino a 78%
     // Lontano: gradient diffuso fino a 92% (più soft, simula diffusione luce)
@@ -1118,9 +1059,33 @@ export function AppleBlurryBackground() {
     const enhancedColor = getDepthEnhancedColor(sphere.color, sphere.blur);
     const gradientStop = getGradientStop(sphere.blur);
     const rayAngle = getGodrayAngle(sphere.id);
-    const radialGradient = `radial-gradient(circle at center, ${enhancedColor} 0%, transparent ${gradientStop}%)`;
+    const radialGradient = `radial-gradient(circle at center, var(--pulse-color-inner) 0%, var(--pulse-color-mid) 48%, var(--pulse-color-outer) ${gradientStop}%, transparent 100%)`;
     const godrayGradient = createGodrayGradient(enhancedColor, rayAngle, sphere.blur);
     
+    const animationConfig = shouldReduceMotion
+      ? {}
+      : {
+          translateX: motionPattern.x,
+          translateY: motionPattern.y,
+          scale: [
+            1,
+            1.08,
+            1,
+            0.95,
+            1
+          ],
+          rotate: [
+            0,
+            2.5,
+            0,
+            -1.8,
+            0
+          ],
+          '--pulse-color-inner': pulseSequence.inner,
+          '--pulse-color-mid': pulseSequence.mid,
+          '--pulse-color-outer': pulseSequence.outer,
+        };
+
     return (
       <motion.div
         className="absolute rounded-full"
@@ -1137,31 +1102,13 @@ export function AppleBlurryBackground() {
           x: '-50%', // Centra orizzontalmente - NON animare questo!
           y: shouldReduceMotion ? '-50%' : yWithCentering, // Centra verticalmente + parallax
           willChange: shouldReduceMotion ? 'auto' : 'transform, opacity',
-          backfaceVisibility: 'hidden'
-        }}
+          backfaceVisibility: 'hidden',
+          '--pulse-color-inner': initialPulse.inner,
+          '--pulse-color-mid': initialPulse.mid,
+          '--pulse-color-outer': initialPulse.outer,
+        } as CSSProperties}
         // Animazione organica MULTIDIREZIONALE - Pattern ellittici/circolari naturali!
-        animate={shouldReduceMotion ? {} : {
-          // Movimento orizzontale ORGANICO - Pattern variato per sfera
-          translateX: motionPattern.x,
-          // Movimento verticale ORGANICO - Pattern variato per sfera
-          translateY: motionPattern.y,
-          // Pulsazione scale SOTTILE - Ridotta per naturalezza
-          scale: [
-            1,      // 0%
-            1.08,   // 25% - max scale (ridotto da 1.12)
-            1,      // 50% - return
-            0.95,   // 75% - min scale (ridotto da 0.92)
-            1       // 100% - return
-          ],
-          // Rotazione SOTTILE - Ridotta per naturalezza
-          rotate: [
-            0,      // 0%
-            2.5,    // 25% - max rotation (ridotto da 3.5)
-            0,      // 50% - return
-            -1.8,   // 75% - max rotation left (ridotto da -2.5)
-            0       // 100% - return
-          ],
-        }}
+        animate={animationConfig}
         transition={{
           duration: sphere.duration,
           repeat: Infinity,
