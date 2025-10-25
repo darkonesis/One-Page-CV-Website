@@ -889,6 +889,147 @@
     z-index: 1;
   }
 
+  .resume-section:first-of-type h1 {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    text-align: center;
+    margin: 0;
+    margin-inline: auto;
+    max-width: min(100%, 13ch);
+    white-space: normal;
+    line-height: 1.15;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    letter-spacing: clamp(0.012em, 0.004em + 0.18vw, 0.028em);
+    text-shadow:
+      0 20px 42px rgba(0, 0, 0, 0.55),
+      0 2px 6px rgba(0, 0, 0, 0.38);
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+    margin-bottom: 0;
+    align-self: center;
+    --badge-height: 2.5em;
+    border-radius: calc(0.4 * var(--badge-height));
+  }
+
+  .resume-section:first-of-type h1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .resume-section:first-of-type h1::before {
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06) 55%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.28;
+  }
+
+  @supports (color-mix(in srgb, red 50%, transparent)) {
+    .resume-section:first-of-type h1::before {
+      border-color: color-mix(in srgb, var(--foreground) 18%, transparent);
+    }
+  }
+
+  .resume-section:first-of-type > .w-full {
+    --hero-cluster-gap: clamp(1.8rem, 3.4vw, 2.6rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--hero-cluster-gap);
+  }
+
+  .resume-section:first-of-type > .w-full > :first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--hero-cluster-gap);
+    margin: 0 !important;
+    text-align: center;
+    width: min(100%, 620px);
+    margin-inline: auto;
+  }
+
+  .resume-section:first-of-type > .w-full > :first-child > :first-child {
+    margin: 0 !important;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .resume-section:first-of-type .flex.flex-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(1.1rem, 1.8vw, 1.5rem);
+    width: min(100%, 360px);
+    margin-inline: auto;
+  }
+
+  .resume-section:first-of-type .resume-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.55rem, 1vw, 0.85rem);
+    padding: clamp(0.72rem, 1.3vw, 1rem) clamp(1.15rem, 2vw, 1.45rem);
+    border-radius: 1.25rem;
+    letter-spacing: 0.012em;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+    background: rgba(20, 20, 22, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(18px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      0 18px 36px rgba(0, 0, 0, 0.46),
+      0 4px 12px rgba(0, 0, 0, 0.32);
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35));
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .resume-section:first-of-type .resume-chip::before,
+  .resume-section:first-of-type .resume-chip::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .resume-section:first-of-type .resume-chip::before {
+    inset: -0.1em;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .resume-section:first-of-type .resume-chip::after {
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 40%);
+    opacity: 0.4;
+  }
+
+  .resume-section:first-of-type .resume-chip:hover,
+  .resume-section:first-of-type .resume-chip:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.035),
+      0 20px 40px rgba(0, 0, 0, 0.54),
+      0 4px 14px rgba(0, 0, 0, 0.36);
+  }
+
+  .resume-section:first-of-type .resume-card {
+    max-width: min(62ch, 100%);
+    margin: 0 auto;
+  }
+
+  @supports (color-mix(in srgb, red 50%, transparent)) {
+    .resume-section:first-of-type .resume-chip::before {
+      border-color: color-mix(in srgb, var(--foreground-secondary) 18%, transparent);
+    }
+  }
+
   .resume-card {
     background-color: var(--card);
     box-shadow: var(--shadow-lg);
@@ -1278,3 +1419,8 @@ body::before {
   syntax: "*";
   inherits: false
 }
+  .resume-section:first-of-type h1,
+  .resume-section:first-of-type .resume-chip {
+    padding: 0.5em 1em;
+    margin-inline: 0.5em;
+  }
