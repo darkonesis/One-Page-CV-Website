@@ -89,13 +89,16 @@ const createSpheres = (isMobile: boolean, pageHeight: number): SphereMeta[] => {
   }
 
   const viewport = typeof window !== 'undefined' ? window.innerHeight : 0;
-  const totalBase = isMobile ? 28 : 40;
-  const total = Math.min(totalBase + Math.floor(pageHeight / 2000), isMobile ? 38 : 60);
+  const heroMin = isMobile ? 14 : HERO_MIN;
+  const midMin = isMobile ? 28 : MID_MIN;
+  const footerMin = isMobile ? 14 : FOOTER_MIN;
+  const totalBase = isMobile ? 34 : 40;
+  const total = Math.min(totalBase + Math.floor(pageHeight / 2000), isMobile ? 48 : 60);
   const counts = pickLayerCounts(total);
   const metas: SphereMeta[] = [];
 
-  const minDistanceX = isMobile ? 8 : 14;
-  const minDistanceY = isMobile ? 45 : 80;
+  const minDistanceX = isMobile ? 6 : 14;
+  const minDistanceY = isMobile ? 38 : 80;
 
   DEPTH_LAYERS.forEach((config) => {
     const desiredCount = counts[config.name];
@@ -113,7 +116,26 @@ const createSpheres = (isMobile: boolean, pageHeight: number): SphereMeta[] => {
         const sizeBias = Math.pow(Math.random(), 0.8);
         size = lerp(config.sizeRange[0], config.sizeRange[1], sizeBias);
         const maxTop = Math.max(pageHeight - size, 0);
-        top = Math.random() * (maxTop || pageHeight);
+        const pickTop = () => {
+          if (maxTop <= 0) return 0;
+          if (!isMobile) {
+            return Math.random() * maxTop;
+          }
+          const heroCap = Math.min(maxTop, Math.max(pageHeight * 0.3, viewport * 1.05));
+          const centerStart = Math.min(maxTop, Math.max(pageHeight * 0.32, heroCap * 0.9));
+          const centerEnd = Math.min(maxTop, Math.max(centerStart + 1, pageHeight * 0.68));
+          const footerStart = Math.min(maxTop, Math.max(pageHeight * 0.6, centerEnd));
+          const roll = Math.random();
+          if (roll < 0.45) {
+            return randInRange(0, Math.max(heroCap, 1));
+          }
+          if (roll < 0.9) {
+            return randInRange(centerStart, Math.max(centerEnd, centerStart + 1));
+          }
+          return randInRange(footerStart, Math.max(maxTop, footerStart + 1));
+        };
+
+        top = pickTop();
         left = -20 + Math.random() * 140;
         blurBase = randInRange(config.blurRange[0], config.blurRange[1]);
 
@@ -124,8 +146,7 @@ const createSpheres = (isMobile: boolean, pageHeight: number): SphereMeta[] => {
         });
 
         if (!valid) {
-          const retryMaxTop = Math.max(pageHeight - size, 0);
-          top = Math.random() * (retryMaxTop || pageHeight);
+          top = pickTop();
           left = -20 + Math.random() * 140;
         }
 
@@ -179,15 +200,15 @@ const createSpheres = (isMobile: boolean, pageHeight: number): SphereMeta[] => {
     }
   };
 
-  const heroEnd = Math.min(pageHeight, Math.max(pageHeight * 0.22, Math.min(pageHeight, viewport || 600)));
-  const footerStart = Math.max(pageHeight - Math.max(pageHeight * 0.22, viewport || 600), 0);
+  const heroEnd = Math.min(pageHeight, Math.max(pageHeight * 0.28, Math.min(pageHeight, (viewport || 640))));
+  const footerStart = Math.max(pageHeight - Math.max(pageHeight * 0.28, viewport || 720), 0);
   const midStart = heroEnd;
   const midEnd = Math.max(Math.min(footerStart, pageHeight), midStart);
-  ensureCoverage(0, heroEnd, HERO_MIN);
+  ensureCoverage(0, heroEnd, heroMin);
   if (midEnd > midStart + 1) {
-    ensureCoverage(midStart, midEnd, MID_MIN);
+    ensureCoverage(midStart, midEnd, midMin);
   }
-  ensureCoverage(footerStart, pageHeight, FOOTER_MIN);
+  ensureCoverage(footerStart, pageHeight, footerMin);
 
   return metas;
 };

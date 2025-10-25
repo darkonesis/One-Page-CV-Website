@@ -1139,9 +1139,10 @@
     position: absolute;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, var(--inner-color), var(--outer-color));
-    opacity: var(--opacity, 0.35);
-    mix-blend-mode: screen;
-    filter: blur(var(--blur, 40px)) brightness(var(--brightness, 1.1)) saturate(1.25);
+    opacity: calc(var(--opacity, 0.35) * var(--brightness, 1));
+    isolation: isolate;
+    mix-blend-mode: normal;
+    filter: blur(var(--blur, 40px));
     transform:
       translate3d(
         calc(var(--x, 0px) + var(--tilt-x, 0px)),
@@ -1151,22 +1152,9 @@
       scale(var(--scale, 1))
       scaleY(var(--shape-scale, 1))
       rotateZ(var(--rotation, 0deg));
-    animation: pulse 8s ease-in-out infinite;
     will-change: transform, filter;
     transition: transform 0.25s ease-out, filter 0.25s ease-out;
     pointer-events: none;
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      scale: 1;
-      opacity: var(--opacity, 0.4);
-    }
-
-    50% {
-      scale: 1.15;
-      opacity: calc(var(--opacity, 0.4) + 0.15);
-    }
   }
 
   .resume-section-icon {
