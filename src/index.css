@@ -1110,6 +1110,8 @@ html {
   background-color: var(--page-background);
   color: var(--page-foreground);
   color-scheme: dark;
+  font-size: var(--font-size);
+  font-family: var(--font-system);
   min-height: -webkit-fill-available;
 }
 
@@ -1118,6 +1120,8 @@ body {
   min-height: 100vh;
   background-color: var(--page-background);
   color: var(--page-foreground);
+  font-family: var(--font-system);
+  line-height: 1.6;
   padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
   position: relative;
 }

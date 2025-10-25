@@ -29,7 +29,9 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext',
+    target: ['es2019', 'safari14'],
+    cssTarget: 'safari14',
+    sourcemap: false,
     outDir: 'dist',
   },
   esbuild: {
