@@ -11,28 +11,28 @@ const educationItems: EducationItem[] = [
   {
     institution: "Synthesis srl",
     title: "Corso Tecnico Grafico con AI",
-    year: "2024",
+    year: "(2024)",
     description:
-      "Percorso avanzato sull'uso dell'intelligenza artificiale applicata al design e alla produzione grafica. Workflow ibridi che integrano AI generativa, automazione e creatività visiva, per ottimizzare tempi e qualità dei processi."
+      "Percorso avanzato sull'uso dell'intelligenza artificiale applicata al design e alla produzione grafica. Workflow ibridi che integrano intelligenza artificiale generativa, automazione e creatività visiva, per ottimizzare tempi e qualità dei processi."
   },
   {
     institution: "Digitally",
     title: "Corso in Digital Marketing",
-    year: "2020",
+    year: "(2020)",
     description:
       "Strategie di marketing digitale e uso operativo delle principali piattaforme ADV (Google Ads, Meta Business Suite, Mailchimp, Analytics). Base solida per campagne integrate orientate alla performance."
   },
   {
     institution: "Scuola Italiana Design",
     title: "Diploma in Design Industriale e Comunicazione Visiva",
-    year: "2017 – 2020",
+    year: "(2017–2020)",
     description:
-      "Progettazione visiva, branding e comunicazione creativa. Approccio design thinking e attenzione al dettaglio visivo, oggi centrali nel mio lavoro digitale."
+      "Progettazione visiva, branding e comunicazione creativa. Approccio di design thinking e attenzione al dettaglio visivo, oggi centrali nel mio lavoro digitale."
   },
   {
     institution: "Liceo Scientifico",
     title: "Diploma di Maturità",
-    year: "2017"
+    year: "(2017)"
   }
 ];
 

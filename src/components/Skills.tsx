@@ -30,7 +30,7 @@ const skills: SkillCategory[] = [
     icon: Palette,
     title: "Graphic & Visual Design",
     items: [
-      "Ideazione e grafiche per campagne, social e materiale promozionale",
+      "Ideazione di grafiche per campagne, social e materiale promozionale",
       "Fotoritocco e post-produzione immagini",
       "Branding e coerenza visiva tra piattaforme",
       "Software: Adobe Photoshop, Illustrator, InDesign, Figma"
@@ -43,7 +43,7 @@ const skills: SkillCategory[] = [
       "Gestione di profili aziendali (Facebook, Instagram)",
       "Pianificazione editoriale e copywriting visivo",
       "Produzione di contenuti foto e video per il digital",
-      "Storytelling visivo orientato al brand"
+      "Storytelling visivo coerente con l’identità del brand"
     ]
   },
   {
@@ -61,7 +61,7 @@ const skills: SkillCategory[] = [
     title: "AI & Automazione Creativa",
     items: [
       "Integrazione di strumenti AI per la produzione grafica e contenutistica",
-      "Prompt design e generazione di concept visual e copy",
+      "Prompt design e generazione di concept visivi e testi",
       "Sperimentazione di flussi di lavoro automatizzati per ottimizzare i tempi creativi"
     ]
   },

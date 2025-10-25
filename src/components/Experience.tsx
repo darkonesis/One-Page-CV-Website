@@ -12,27 +12,27 @@ const experiences: ExperienceItem[] = [
   {
     company: "SKGroup",
     role: "Social Media Manager & Web Developer (Stage)",
-    period: "2024 — in corso",
+    period: "(2024 — in corso)",
     description:
-      "Gestisco la comunicazione digitale del ristorante di proprietà del gruppo, occupandomi della creazione dei contenuti (video, foto, grafiche e materiali per menu) e della presenza online del brand. Sia curando il restyling completo del sito web, sia frontend che backend, con particolare attenzione a performance, user experience e coerenza visiva. È uno dei progetti di cui sono più orgoglioso per equilibrio estetico e funzionalità."
+      "Gestisco la comunicazione digitale del ristorante di proprietà del gruppo, occupandomi della creazione dei contenuti (video, foto, grafiche e materiali per menu) e della presenza online del brand. Curando il restyling completo del sito web, sia front-end che back-end, con particolare attenzione a performance, user experience e coerenza visiva. È uno dei progetti di cui vado più orgoglioso per equilibrio tra estetica e funzionalità."
   },
   {
     company: "Sweden & Martina",
     role: "Graphic Designer & Social Content Creator",
-    period: "2022",
+    period: "(2022)",
     description:
-      "Gestione del team grafico interno, creazione contenuti per i canali social aziendali (post, video e grafiche ADV per la promozione di eventi e prodotti). Collaborazione con il reparto marketing e i reparti di sviluppo per la comunicazione B2B e coordinamento visuale delle campagne di nuovi prodotti."
+      "Gestione del team grafico interno, creazione dei contenuti per i canali social aziendali (post, video e grafiche ADV per la promozione di eventi e prodotti). Collaborazione con il reparto marketing e con i reparti di sviluppo per la comunicazione B2B e il coordinamento visuale delle campagne di nuovi prodotti."
   },
   {
     company: "Berza",
     role: "Graphic Designer & Digital Marketing Specialist",
-    period: "2017",
+    period: "(2017)",
     bullets: [
       "Gestione dei social media (Facebook & Instagram)",
       "Campagne ADV su Meta e Google (Search & Shopping)",
       "UX/UI design in collaborazione con il team di sviluppo",
       "Newsletter e comunicazione diretta con i clienti",
-      "Gestione autonoma della comunicazione con approccio organico"
+      "Gestione autonoma della comunicazione con approccio organico e coerente"
     ]
   }
 ];

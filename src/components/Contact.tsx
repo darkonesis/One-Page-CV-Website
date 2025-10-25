@@ -9,7 +9,7 @@ export function Contact() {
         {/* Section title - H2 using fluid typography */}
         <div className="flex items-center gap-5 md:gap-6 mb-16 md:mb-20">
           <MessageCircle className="flex-shrink-0 resume-section-icon" strokeWidth={2} />
-          <h2>Let's talk.</h2>
+          <h2>Let’s talk.</h2>
         </div>
 
         {/* Contact content */}

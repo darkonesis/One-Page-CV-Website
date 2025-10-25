@@ -39,7 +39,7 @@ export function Hero() {
         {/* Bio card */}
         <div className="resume-card px-6 md:px-8 py-6 md:py-8 rounded-3xl transition-all">
           <p>
-            Creativo, preciso e orientato ai risultati. Mi occupo di <strong>web development</strong>, <strong>content creation</strong> e <strong>digital advertising</strong>. Il mio obiettivo è creare esperienze digitali chiare, funzionali e visivamente curate, sempre bilanciando resa ed efficienza.
+            Creativo, preciso e orientato ai risultati. Mi occupo di <strong>web development</strong>, <strong>content creation</strong> e <strong>digital advertising</strong>. Il mio obiettivo è creare esperienze digitali chiare, funzionali e visivamente curate, bilanciando sempre resa ed efficienza.
           </p>
         </div>
       </div>

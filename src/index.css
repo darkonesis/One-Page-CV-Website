@@ -979,6 +979,13 @@
 }
 
 :root {
+  color-scheme: dark light;
+  --page-background: #0a0a0a;
+  --page-foreground: #f2f2f2;
+  --safe-area-top: max(env(safe-area-inset-top), 0px);
+  --safe-area-right: max(env(safe-area-inset-right), 0px);
+  --safe-area-bottom: max(env(safe-area-inset-bottom), 0px);
+  --safe-area-left: max(env(safe-area-inset-left), 0px);
   --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
   --font-size-base: 16px;
   --font-size-h1: clamp(2.5rem, 5vw + 1rem, 6rem);
@@ -1011,9 +1018,9 @@
   --optical-padding-h2: .12em;
   --optical-padding-h3: .1em;
   --font-size: 16px;
-  --background: #0a0a0a;
+  --background: var(--page-background);
   --background-gradient: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
-  --foreground: #f2f2f2;
+  --foreground: var(--page-foreground);
   --foreground-secondary: #b3b3b3;
   --foreground-tertiary: #a6a6a6;
   --card: #1c1c1e;
@@ -1100,15 +1107,44 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   height: 100%;
+  background-color: var(--page-background);
+  color: var(--page-foreground);
+  color-scheme: dark;
   min-height: -webkit-fill-available;
 }
 
 body {
-  min-height: -webkit-fill-available;
-  padding: 0;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
   margin: 0;
+  min-height: 100vh;
+  background-color: var(--page-background);
+  color: var(--page-foreground);
+  padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
+  position: relative;
+}
+
+@supports (min-height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--page-background);
+  z-index: -1;
+  pointer-events: none;
+}
+
+#root {
+  min-height: 100%;
   position: relative;
 }
 
